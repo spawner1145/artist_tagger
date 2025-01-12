@@ -1,5 +1,6 @@
 # artist_tagger
 - 基于resnet50，进行多标签分类的训练示例和运行脚本，可用于训练画师串反推模型
+- train用于训练，run用于运行已有模型
 - 代码中默认使用的csv编码是latin1，也就是说csv文件中不能出现中文，如有需求可自行更改
 - 训练时train.csv填图片的名称(包括后缀)和对应的tags，注意tag之间用英文逗号分割，不能带有权重语法，所有可用于标注的tag见tags.csv
 - 如果图片的后缀不是jpg，jepg，png则统一在train.csv里填后缀为jpg，因为别的格式(包括GIF)，会被处理成jpg
