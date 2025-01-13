@@ -20,7 +20,7 @@ import cv2
 base_dir = 'D:/tagger/artist_tagger/train_example_folder'
 # 替换为你要预测的图片所在的目录
 img_dir = 'D:/tagger/artist_tagger/input_images'
-# 模型输出目录
+# 模型输出位置(pth是模型文件后缀名)
 model_path = 'D:/tagger/artist_tagger/tagger.pth'
 # 设置阈值，小于0表示使用自动阈值，大于等于0表示使用手动阈值，如果使用手动阈值最终预测结果只会输出大于此阈值的结果，手动阈值需要为0-1之间的一个值
 threshold = -1  # 使用自动阈值，这里可以使用是因为有验证集，但实际上用户不一定有验证集，所以推荐使用手动阈值
