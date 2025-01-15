@@ -429,9 +429,6 @@ except Exception as e:
 model = model.to(device)
 model.eval()
 
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
-
 for filename in os.listdir(img_dir):
     if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
         img_path = os.path.join(img_dir, filename)
@@ -439,6 +436,8 @@ for filename in os.listdir(img_dir):
         print(f"Predictions for {filename}: {predictions}")
         
         if annotate_images:
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
             annotate_image(img_path, predictions, output_dir, threshold, optimal_thresholds)
 
 print("Classes:", mlb.classes_)
