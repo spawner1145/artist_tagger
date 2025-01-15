@@ -21,6 +21,8 @@ img_dir = 'D:/tagger/artist_tagger/input_images'  # 替换为要预测的图片�
 model_path = 'D:/tagger/artist_tagger/tagger.pth'
 # 设置阈值，不支持使用自动阈值(因为默认你没有验证集), 输入0到1的阈值
 threshold = 0.3
+annotate_images = True  # 是否进行图像标注
+output_dir = '/kaggle/working/output_images'  # 图像标注输出目录
 
 # 忽略特定警告
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -230,6 +232,37 @@ def predict_image_styles(img_path, model, transform, label_encoder, threshold, d
 
     return sorted_style_prob_dict
 
+def annotate_image(img_path, predictions, output_dir, threshold, optimal_thresholds=None):
+    try:
+        image = cv2.imread(img_path)
+        if image is None:
+            print(f"Error reading image {img_path} with OpenCV.")
+            return
+        
+        h, w, _ = image.shape
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 0.5
+        thickness = 1
+        color = (0, 255, 0)  # Green color for text
+        
+        y_offset = 20
+        for label, prob in predictions.items():
+            if threshold < 0:
+                if optimal_thresholds is not None and prob > optimal_thresholds.get(label, 0.3):
+                    text = f"{label}: {prob:.2f}"
+                    cv2.putText(image, text, (10, y_offset), font, font_scale, color, thickness, cv2.LINE_AA)
+                    y_offset += 30
+            else:
+                if prob > threshold:
+                    text = f"{label}: {prob:.2f}"
+                    cv2.putText(image, text, (10, y_offset), font, font_scale, color, thickness, cv2.LINE_AA)
+                    y_offset += 30
+        
+        output_path = os.path.join(output_dir, os.path.basename(img_path))
+        cv2.imwrite(output_path, image)
+        print(f"Annotated image saved to {output_path}")
+    except Exception as e:
+        print(f"Error annotating image {img_path}: {e}")
 
 # 加载模型
 try:
@@ -246,5 +279,10 @@ for filename in os.listdir(img_dir):
         img_path = os.path.join(img_dir, filename)
         predictions = predict_image_styles(img_path, model, transform_val, mlb, threshold, device)
         print(f"Predictions for {filename}: {predictions}")
+        
+        if annotate_images:
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            annotate_image(img_path, predictions, output_dir, threshold)
 
 print("Classes:", mlb.classes_)
